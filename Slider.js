@@ -11,23 +11,22 @@ export class Slider {
     this.cardReject = undefined
     this.cardLike = undefined
 
+    this.onStart = this.onStart.bind(this)
     this.onMove = this.onMove.bind(this)
     this.onEnd = this.onEnd.bind(this)
 
-    container.querySelectorAll(".demo__card:not(.inactive)").forEach(card => {
-      card.addEventListener("mousedown", (event) => this.onStart(event))
-      card.addEventListener("mousedown", (event) => this.onStart(event))
+    container.querySelectorAll(".slider__card:not(.inactive)").forEach(card => {
+      card.addEventListener("mousedown", this.onStart)
+      card.addEventListener("mousedown", this.onStart)
     })
   }
 
   onStart(event) {
-    console.log("onStart", this);
-
     if (this.animating) return;
 
     this.card = event.currentTarget
-    this.cardReject = this.card.querySelector(".demo__card__choice.m--reject")
-    this.cardLike = this.card.querySelector(".demo__card__choice.m--like")
+    this.cardReject = this.card.querySelector(".slider__card__choice.m--reject")
+    this.cardLike = this.card.querySelector(".slider__card__choice.m--like")
     this.startX =  event.pageX || event.originalEvent.touches[0].pageX;
 
     document.addEventListener("mousemove", this.onMove)
@@ -37,8 +36,6 @@ export class Slider {
   }
 
   onMove(event) {
-    // console.log("onMove", this);
-
     let x = event.pageX || event.originalEvent.touches[0].pageX;
     this.pullDeltaX = (x - this.startX);
     if (!this.pullDeltaX) return;
@@ -47,8 +44,6 @@ export class Slider {
   }
 
   onEnd() {
-    // console.log("onEnd", this);
-    // TODO? remove on cards with foreach?
     document.removeEventListener('mousemove', this.onMove)
     document.removeEventListener('touchmove', this.onMove)
     document.removeEventListener('mouseup', this.onEnd)
@@ -60,8 +55,6 @@ export class Slider {
   }
 
   dragCard() {
-    // console.log("dragCard", this);
-
     this.animating = true;
     this.deg = this.pullDeltaX / 10;
 
@@ -76,8 +69,6 @@ export class Slider {
   };
 
   releaseCard() {
-    console.log("releaseCard", this);
-
     if (this.pullDeltaX >= this.decisionVal) {
       this.card.classList.add("to-right");
     } else if (this.pullDeltaX <= -this.decisionVal) {
@@ -95,7 +86,7 @@ export class Slider {
 
         if (this.cardsCounter === this.numOfCards) {
           this.cardsCounter = 0;
-          document.querySelectorAll(".demo__card").forEach(el => el.classList.remove("below"));
+          document.querySelectorAll(".slider__card").forEach(el => el.classList.remove("below"));
         }
       }, 300);
     }
@@ -107,7 +98,7 @@ export class Slider {
     setTimeout(() => {
       this.card.style = null
       this.card.classList.remove("reset")
-      this.card.querySelectorAll(".demo__card__choice").forEach(el => el.style = null)
+      this.card.querySelectorAll(".slider__card__choice").forEach(el => el.style = null)
 
       this.pullDeltaX = 0;
       this.animating = false;
