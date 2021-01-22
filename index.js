@@ -7,7 +7,6 @@ $(document).ready(function() {
   let pullDeltaX = 0;
   let deg = 0;
   let card, cardReject, cardLike;
-
   let startX = 0
 
   function draggCard() {
@@ -42,7 +41,7 @@ $(document).ready(function() {
 
         if (cardsCounter === numOfCards) {
           cardsCounter = 0;
-          $(".demo__card").removeClass("below"); 
+          card.classList.remove("below");
         }
       }, 300);
     }
