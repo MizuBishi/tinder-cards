@@ -1,79 +1,104 @@
 $(document).ready(function() {
 
-  var animating = false;
-  var cardsCounter = 0;
-  var numOfCards = 6;
-  var decisionVal = 80;
-  var pullDeltaX = 0;
-  var deg = 0;
-  var $card, $cardReject, $cardLike;
+  let animating = false;
+  let cardsCounter = 0;
+  let numOfCards = 6;
+  let decisionVal = 80;
+  let pullDeltaX = 0;
+  let deg = 0;
+  let card, cardReject, cardLike;
 
-  function pullChange() {
+  let startX = 0
+
+  function draggCard() {
     animating = true;
     deg = pullDeltaX / 10;
-    $card.css("transform", "translateX("+ pullDeltaX +"px) rotate("+ deg +"deg)");
 
-    var opacity = pullDeltaX / 100;
-    var rejectOpacity = (opacity >= 0) ? 0 : Math.abs(opacity);
-    var likeOpacity = (opacity <= 0) ? 0 : opacity;
-    $cardReject.css("opacity", rejectOpacity);
-    $cardLike.css("opacity", likeOpacity);
+    card.style.transform = `translateX(${pullDeltaX}px) rotate(${deg}deg)`;
+
+    let opacity = pullDeltaX / 100;
+    let rejectOpacity = (opacity >= 0) ? 0 : Math.abs(opacity);
+    let likeOpacity = (opacity <= 0) ? 0 : opacity;
+
+    cardReject.style.opacity = rejectOpacity;
+    cardLike.style.opacity = likeOpacity;
   };
 
-  function release() {
-
+  function releaseCard() {
     if (pullDeltaX >= decisionVal) {
-      $card.addClass("to-right");
+      card.classList.add("to-right");
     } else if (pullDeltaX <= -decisionVal) {
-      $card.addClass("to-left");
+      card.classList.add("to-left");
     }
 
     if (Math.abs(pullDeltaX) >= decisionVal) {
-      $card.addClass("inactive");
+      card.classList.add("inactive");
 
       setTimeout(function() {
-        $card.addClass("below").removeClass("inactive to-left to-right");
+        card.classList.add("below");
+        card.classList.remove("inactive", "to-left", "to-right");
+
         cardsCounter++;
+
         if (cardsCounter === numOfCards) {
           cardsCounter = 0;
-          $(".demo__card").removeClass("below");
+          $(".demo__card").removeClass("below"); 
         }
       }, 300);
     }
 
     if (Math.abs(pullDeltaX) < decisionVal) {
-      $card.addClass("reset");
+      card.classList.add("reset");
     }
 
     setTimeout(function() {
-      $card.attr("style", "").removeClass("reset")
-        .find(".demo__card__choice").attr("style", "");
+      card.style = null
+      card.classList.remove("reset")
+      card.querySelectorAll(".demo__card__choice").forEach(el => el.style = null)
 
       pullDeltaX = 0;
       animating = false;
     }, 300);
   };
 
-  $(document).on("mousedown touchstart", ".demo__card:not(.inactive)", function(e) {
+  function onMove(event) {
+    console.log("onMove");
+    let x = event.pageX || event.originalEvent.touches[0].pageX;
+    pullDeltaX = (x - startX);
+    if (!pullDeltaX) return;
+    draggCard();
+  }
+
+  function onEnd() {
+    console.log("onEnd");
+    document.removeEventListener('mousemove', onMove)
+    document.removeEventListener('touchmove', onMove)
+    
+    document.removeEventListener('mouseup', onEnd)
+    document.removeEventListener('touchend', onEnd)
+
+    if (!pullDeltaX) return; // prevents from rapid click events
+    releaseCard();
+  }
+
+  function onStart(event) {
     if (animating) return;
 
-    $card = $(this);
-    $cardReject = $(".demo__card__choice.m--reject", $card);
-    $cardLike = $(".demo__card__choice.m--like", $card);
-    var startX =  e.pageX || e.originalEvent.touches[0].pageX;
+    card = this;
+    cardReject = card.querySelector(".demo__card__choice.m--reject")
+    cardLike = card.querySelector(".demo__card__choice.m--like")
 
-    $(document).on("mousemove touchmove", function(e) {
-      var x = e.pageX || e.originalEvent.touches[0].pageX;
-      pullDeltaX = (x - startX);
-      if (!pullDeltaX) return;
-      pullChange();
-    });
+    startX =  event.pageX || event.originalEvent.touches[0].pageX;
 
-    $(document).on("mouseup touchend", function() {
-      $(document).off("mousemove touchmove mouseup touchend");
-      if (!pullDeltaX) return; // prevents from rapid click events
-      release();
-    });
-  });
+    document.addEventListener("mousemove", onMove)
+    document.addEventListener("touchmove", onMove)
 
+    document.addEventListener("mouseup", onEnd)
+    document.addEventListener("touchend", onEnd)
+  }
+
+  document.querySelectorAll(".demo__card:not(.inactive)").forEach(card => {
+    card.addEventListener("mousedown", onStart)
+    card.addEventListener("mousedown", onStart)
+  })
 });
