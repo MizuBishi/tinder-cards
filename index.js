@@ -41,7 +41,7 @@ $(document).ready(function() {
 
         if (cardsCounter === numOfCards) {
           cardsCounter = 0;
-          card.classList.remove("below");
+          document.querySelectorAll(".demo__card").forEach(el => el.classList.remove("below"));
         }
       }, 300);
     }
