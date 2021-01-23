@@ -20,9 +20,9 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 30.6rem;
+  width: 100rem;
   height: 54rem;
-  margin-left: -15.3rem;
+  margin-left: -50rem;
   margin-top: -27rem;
   background: #f6f6f5;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);

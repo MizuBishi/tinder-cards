@@ -17,7 +17,7 @@ export class Slider {
 
     container.querySelectorAll(".slider__card:not(.inactive)").forEach(card => {
       card.addEventListener("mousedown", this.onStart)
-      card.addEventListener("mousedown", this.onStart)
+      card.addEventListener("touchstart", this.onStart)
     })
   }
 
@@ -38,7 +38,8 @@ export class Slider {
   onMove(event) {
     let x = event.pageX || event.originalEvent.touches[0].pageX;
     this.pullDeltaX = (x - this.startX);
-    if (!this.pullDeltaX) return;
+
+    if (!this.pullDeltaX) return; // prevents from rapid click events
 
     this.dragCard();
   }
